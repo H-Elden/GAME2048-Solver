@@ -1,7 +1,5 @@
 import torch
 import tkinter as tk
-from tkinter import font
-import numpy as np
 from game_env import Game2048
 from dqn_agent import DQNAgent
 
@@ -14,22 +12,23 @@ class GameGUI:
 
         # 定义不同数字对应的颜色
         self.colors = {
-            0: "#CCC0B3",
+            0: "#CDC1B3",
             2: "#EEE4DA",
-            4: "#EDE0C8",
+            4: "#ECE0C8",
             8: "#F2B179",
             16: "#F59563",
-            32: "#F67C5F",
-            64: "#F65E3B",
-            128: "#EDCF72",
+            32: "#F57C5F",
+            64: "#F65D3B",
+            128: "#EDCE71",
             256: "#EDCC61",
-            512: "#EDC850",
+            512: "#ECC850",
             1024: "#EDC53F",
-            2048: "#EDC22E",
+            2048: "#EEC22E",
         }
 
         # 创建图形界面元素
         self.create_widgets()
+        self.step_count = 0  # 初始化步数计数器
         self.play_game()  # 开始游戏
 
     def create_widgets(self):
@@ -53,7 +52,9 @@ class GameGUI:
             self.labels.append(row)
 
         # 分数显示
-        self.score_label = tk.Label(self.master, text="Score: 0", font=("Arial", 16))
+        self.score_label = tk.Label(
+            self.master, text="Score: 0\tSteps: 0", font=("Arial", 16)
+        )
         self.score_label.pack(pady=10)
 
     def update_gui(self):
@@ -65,7 +66,9 @@ class GameGUI:
                     text=str(val) if val != 0 else "",
                     bg=self.colors.get(val, "#3C3A32"),
                 )
-        self.score_label.config(text=f"Score: {self.env.score}")
+        self.score_label.config(
+            text=f"Score: {self.env.score}\tSteps: {self.env.steps}"
+        )
         self.master.update()
 
     def play_game(self):
@@ -75,6 +78,13 @@ class GameGUI:
             action = self.agent.act(state)
             direction = ["up", "down", "left", "right"][action]
             self.env.move(direction)
+
+            # 更新步数计数器并打印操作信息
+            self.step_count += 1
+            print(
+                f"step: {self.step_count},\taction: {direction},\tscore: {self.env.score}"
+            )
+
             self.update_gui()
             self.master.after(200)  # 控制移动速度
         print("Game Over! Final Score:", self.env.score)

@@ -14,6 +14,7 @@ def train(episodes=1000, batch_size=32):
         state = env.grid.flatten()  # 将棋盘展平为16维向量
         total_reward = 0
         done = False
+        step_count = 0  # 步数计数器
 
         while not done:
             action = agent.act(state)  # 选择动作
@@ -28,12 +29,14 @@ def train(episodes=1000, batch_size=32):
             agent.remember(state, action, reward, next_state, done)
             state = next_state
             total_reward += reward
+            step_count += 1  # 每次动作后计数
 
             if done:
                 print(
-                    f"Episode: {e}/{episodes}, "
+                    f"Episode: {e+1}/{episodes}, "
                     f"Score: {env.score}, "
                     f"Max Tile: {np.max(env.grid)}, "
+                    f"Steps: {env.steps}/{step_count}, "  # 有效步数 / 总步数
                     f"Epsilon: {agent.epsilon:.2f}"
                 )
 

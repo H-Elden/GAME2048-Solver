@@ -6,7 +6,8 @@ class Game2048:
     def __init__(self):
         # 初始化4x4棋盘，全零矩阵
         self.grid = np.zeros((4, 4), dtype=int)
-        self.score = 0
+        self.score = 0  # 得分
+        self.steps = 0  # 有效移动步数
         # 游戏开始时随机生成两个数（2或4）
         self.add_random_tile()
         self.add_random_tile()
@@ -33,6 +34,7 @@ class Game2048:
         # 如果棋盘状态改变，则添加新数字
         if not np.array_equal(orig_grid, self.grid):
             self.add_random_tile()
+            self.steps += 1  # 有效移动步数增加
 
     def _move(self, row):
         # 核心移动逻辑：合并相同数字
