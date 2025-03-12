@@ -13,11 +13,32 @@ class Game2048:
         self.add_random_tile()
 
     def add_random_tile(self):
-        # 在空白位置随机添加新数字（90%概率2，10%概率4）
+        """在空白位置随机添加新数字（90%概率2，10%概率4）"""
         empty = list(zip(*np.where(self.grid == 0)))
         if empty:
             x, y = random.choice(empty)
             self.grid[x][y] = 2 if random.random() < 0.9 else 4
+
+    def get_state(self):
+        """优化状态表示：对数处理并保留空间结构"""
+        log_grid = np.log2(self.grid + 1e-5)  # 防止log(0)
+        return log_grid.reshape(4, 4, 1)  # 输出形状(4,4,1)
+
+    def get_valid_actions(self):
+        """返回有效动作索引列表[0-3]"""
+        valid = []
+        for idx, dir in enumerate(["up", "down", "left", "right"]):
+            copy = Game2048()
+            copy.grid = self.grid.copy()
+            copy.move(dir)
+            if not np.array_equal(copy.grid, self.grid):
+                valid.append(idx)
+        return valid
+
+    def game_over(self) -> bool:
+        """判断是否还有可行的移动方向"""
+        valid = self.get_valid_actions()
+        return False if valid else True
 
     def move(self, direction):
         # 执行移动操作，记录原始状态用于比较
@@ -72,13 +93,3 @@ class Game2048:
         rotated = np.rot90(grid, -1)  # 顺时针旋转90度
         new_grid = self._move_left(rotated)
         return np.rot90(new_grid, 1)  # 逆时针旋转90度复原
-
-    def game_over(self):
-        # 判断是否还有可行的移动方向
-        for direction in ["up", "down", "left", "right"]:
-            game_copy = Game2048()
-            game_copy.grid = self.grid.copy()
-            game_copy.move(direction)
-            if not np.array_equal(game_copy.grid, self.grid):
-                return False
-        return True

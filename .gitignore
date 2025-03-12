@@ -1,3 +1,5 @@
 __pycache__/dqn_agent.cpython-313.pyc
 __pycache__/game_env.cpython-313.pyc
-2048_dqn.pth
+*.pth
+*.png
+*.log

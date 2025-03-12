@@ -29,6 +29,7 @@ class GameGUI:
         # 创建图形界面元素
         self.create_widgets()
         self.step_count = 0  # 初始化步数计数器
+        self.update_gui()
         self.play_game()  # 开始游戏
 
     def create_widgets(self):
@@ -72,32 +73,28 @@ class GameGUI:
         self.master.update()
 
     def play_game(self):
-        # 使用训练好的模型进行游戏
         while not self.env.game_over():
-            state = self.env.grid.flatten()
-            action = self.agent.act(state)
+            state = self.env.get_state()  # 使用新状态表示
+            valid_actions = self.env.get_valid_actions()
+            if not valid_actions:
+                break
+
+            action = self.agent.act(state, valid_actions)
             direction = ["up", "down", "left", "right"][action]
             self.env.move(direction)
-
-            # 更新步数计数器并打印操作信息
-            self.step_count += 1
-            print(
-                f"step: {self.step_count},\taction: {direction},\tscore: {self.env.score}"
-            )
-
             self.update_gui()
-            self.master.after(200)  # 控制移动速度
+            self.master.after(200)
         print("Game Over! Final Score:", self.env.score)
 
 
 if __name__ == "__main__":
     # 加载训练好的模型
-    agent = DQNAgent(state_size=16, action_size=4)
-    agent.model.load_state_dict(torch.load("2048_dqn.pth"))
+    agent = DQNAgent()
+    agent.model.load_state_dict(torch.load("2048_dqn_cnn_final.pth"))
     agent.epsilon = 0.0  # 关闭探索
 
     # 启动图形界面
     root = tk.Tk()
-    root.title("2048 DQN Agent")
+    root.title("2048 DQN Agent (CNN)")
     gui = GameGUI(root, agent)
     root.mainloop()
