@@ -3,14 +3,21 @@ import random
 
 
 class Game2048:
-    def __init__(self):
-        # 初始化4x4棋盘，全零矩阵
-        self.grid = np.zeros((4, 4), dtype=int)
+    def __init__(self, initial_grid=None):
+        if initial_grid is not None:
+            # 检查输入矩阵是否为 4x4
+            if isinstance(initial_grid, np.ndarray) and initial_grid.shape == (4, 4):
+                self.grid = initial_grid.copy()  # 使用提供的矩阵初始化棋盘
+            else:
+                raise ValueError("初始棋盘必须是一个 4x4 的 NumPy 数组！")
+        else:
+            # 初始化4x4棋盘，全零矩阵
+            self.grid = np.zeros((4, 4), dtype=int)
+            # 游戏开始时随机生成两个数（2或4）
+            self.add_random_tile()
+            self.add_random_tile()
         self.score = 0  # 得分
         self.steps = 0  # 有效移动步数
-        # 游戏开始时随机生成两个数（2或4）
-        self.add_random_tile()
-        self.add_random_tile()
 
     def add_random_tile(self):
         """在空白位置随机添加新数字（90%概率2，10%概率4）"""
