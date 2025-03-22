@@ -3,11 +3,15 @@ import tkinter as tk
 from game_env import Game2048
 from dqn_agent import DQNAgent
 
+import os
+from train import FINAL_MODEL_DIR, TEMP_MODEL_DIR
+
 
 class GameGUI:
-    def __init__(self, master, agent):
+    def __init__(self, master, agent, refresh=200):
         self.master = master
         self.agent = agent
+        self.refresh = refresh
         self.env = Game2048()
 
         # 定义不同数字对应的颜色
@@ -83,18 +87,58 @@ class GameGUI:
             direction = ["up", "down", "left", "right"][action]
             self.env.move(direction)
             self.update_gui()
-            self.master.after(200)
+            self.master.after(self.refresh)
         print("Game Over! Final Score:", self.env.score)
 
 
 if __name__ == "__main__":
+    # 选择模型
+    m = input("Final model or temp model? [F/t]:").strip() or "f"
+    model_path = ""
+    if m.lower() == "f":
+        # 获取目录内容
+        all_entries = os.listdir(FINAL_MODEL_DIR)
+        # 过滤 .pth 文件并排序
+        pth_files = []
+        for entry in all_entries:
+            full_path = os.path.join(FINAL_MODEL_DIR, entry)
+            if os.path.isfile(full_path) and entry.lower().endswith(".pth"):
+                pth_files.append(entry)
+
+        # 从大到小，从新到旧
+        pth_files.sort(reverse=True)
+
+        # 输出结果
+        if not pth_files:
+            raise FileNotFoundError(
+                f"Directory {os.path.abspath(FINAL_MODEL_DIR)} does not contain any .pth file"
+            )
+        else:
+            print(f"Found the following .pth files in the {FINAL_MODEL_DIR}:\n")
+            for idx, filename in enumerate(pth_files, 1):
+                print(f"\t{idx}. {filename}")
+            print()
+            num = int(input("Input number [1]: ") or "1")
+            if num > len(pth_files):
+                raise ValueError("Invalid number.")
+            model_path = os.path.join(FINAL_MODEL_DIR, pth_files[num - 1])
+    elif m.lower() == "t":
+        ch = int(input("Input checkpoint [100]: ").strip() or "100")
+        model_path = os.path.join(TEMP_MODEL_DIR, f"checkpoint_{ch}.pth")
+    else:
+        raise ValueError("Invalid option. Only f or t.")
+    print(f"Model: \033[94m{os.path.abspath(model_path)}\033[0m")
+
     # 加载训练好的模型
     agent = DQNAgent()
-    agent.model.load_state_dict(torch.load("2048_dqn_cnn_final.pth"))
+    agent.model.load_state_dict(torch.load(model_path))
     agent.epsilon = 0.0  # 关闭探索
+
+    # 输入gui刷新率
+    refresh = int(input("Input GUI refresh rate [200]: ").strip() or "200")
 
     # 启动图形界面
     root = tk.Tk()
     root.title("2048 DQN Agent (CNN)")
-    gui = GameGUI(root, agent)
+    gui = GameGUI(root, agent, refresh=refresh)
     root.mainloop()

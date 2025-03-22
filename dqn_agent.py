@@ -15,17 +15,19 @@ class DQN(nn.Module):
     def __init__(self):
         super().__init__()
         self.conv = nn.Sequential(
-            nn.Conv2d(1, 32, kernel_size=3, padding=1),  # 输入通道1，输出32
+            # 输入1通道，输出32通道，3*3卷积核，填充1层0保证图大小不变
+            nn.Conv2d(1, 32, kernel_size=3, padding=1),
             nn.ReLU(),
-            nn.Conv2d(32, 64, kernel_size=3, padding=1),
+            nn.Conv2d(32, 64, kernel_size=3, padding=1),  # 输入32通道，输出64通道
             nn.ReLU(),
-            nn.Conv2d(64, 64, kernel_size=3, padding=1),
+            nn.Conv2d(64, 64, kernel_size=3, padding=1),  # 输入64通道，输出64通道
             nn.ReLU(),
         )
         self.fc = nn.Sequential(
             nn.Linear(64 * 4 * 4, 512), nn.ReLU(), nn.Linear(512, 4)  # 输出4个动作的Q值
         )
 
+    # 前向传播流程
     def forward(self, x):
         x = self.conv(x)  # 输入形状: (batch,1,4,4)
         x = x.reshape(x.size(0), -1)  # 展平为 (batch, 64*4*4)
