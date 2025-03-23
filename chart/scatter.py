@@ -40,7 +40,7 @@ def save_scatter(
     fig.text(
         0.5,
         0.93,
-        "Max Tile histogram",
+        f"{label} Scatter Diagram",
         ha="center",
         fontsize=18,
         fontweight="bold",
@@ -54,7 +54,8 @@ def save_scatter(
         color="gray",
     )
 
-    ax.legend(fontsize=10)
+    # 图例
+    # ax.legend(fontsize=10)
 
     # 设置网格
     ax.grid(True, alpha=0.3)

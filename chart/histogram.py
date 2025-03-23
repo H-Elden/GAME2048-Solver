@@ -24,7 +24,7 @@ def save_histogram(episodes: list[int], max_tiles: list, time: str, chart_dir: s
     fig, ax = plt.subplots(figsize=(12, 6))
 
     # 绘制柱状图
-    ax.bar(range(len(tiles)), counts, color="skyblue", edgecolor="black", alpha=0.8)
+    ax.bar(range(len(tiles)), counts, color="blue", edgecolor="black", alpha=0.8)
 
     # 设置横轴刻度和标签
     ax.set_xticks(range(len(tiles)), tiles)
@@ -36,7 +36,7 @@ def save_histogram(episodes: list[int], max_tiles: list, time: str, chart_dir: s
     fig.text(
         0.5,
         0.93,
-        "Max Tile histogram",
+        "Max Tile Histogram",
         ha="center",
         fontsize=18,
         fontweight="bold",
