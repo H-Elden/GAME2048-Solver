@@ -7,7 +7,7 @@ from tqdm import tqdm
 from chart import save_train_chart, save_test_chart
 from datetime import datetime
 from test import test_model
-from config import TEMP_MODEL_DIR, FINAL_MODEL_DIR, LOG_DIR
+from config import TEMP_MODEL_DIR, FINAL_MODEL_DIR, LOG_DIR, update_target_freq
 
 import os
 
@@ -31,13 +31,7 @@ def calculate_reward(env, prev_score, prev_max_tile, prev_empty_cells):
     monotonicity = calculate_monotonicity(env.grid)
     mono_reward = monotonicity * 5  # 乘以系数平衡奖励量级
 
-    # # 5. 无效移动惩罚（施加强惩罚阻止无效动作）
-    # if env.grid_equal_after_move:  # 需在env中添加此判断
-    #     invalid_penalty = -10.0
-    # else:
-    #     invalid_penalty = 0.0
-
-    # 6. 总奖励组合
+    # 总奖励组合
     total_reward = score_reward + max_tile_reward + empty_reward + mono_reward
     return total_reward
 
@@ -87,8 +81,6 @@ def train(model_path: str, episodes=5000, log_file=None):
         )
     # 初始化环境和代理
     agent = DQNAgent()
-    update_target_freq = 50  # 目标网络更新频率
-
     for e in tqdm(range(episodes)):
         env = Game2048()
         state = env.get_state()
@@ -142,6 +134,8 @@ if __name__ == "__main__":
     episodes = int(input("Input episodes: "))
     chart = input("Generate statistical chart? [Y/n]: ").strip() or "y"
     test = input("Automatically test the final model? [Y/n]: ").strip() or "y"
+    if test == "y":
+        test_num = int(input("Input test times [100]: ").strip() or "100")
     now_time = datetime.now().strftime("%Y%m%d_%H%M")
 
     # 确保日志文件夹存在
@@ -163,5 +157,5 @@ if __name__ == "__main__":
         save_train_chart(train_log_file, now_time)
 
     if test.lower() == "y":
-        test_model(model_path, 100, test_log_file)
+        test_model(model_path, test_num, test_log_file)
         save_test_chart(test_log_file, now_time)

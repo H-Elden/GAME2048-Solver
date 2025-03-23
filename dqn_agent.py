@@ -5,6 +5,8 @@ import random
 from collections import deque
 import numpy as np
 
+from config import maxlen, gamma, epsilon, epsilon_min, epsilon_decay, learning_rate
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # device = torch.device("cpu")
 
@@ -37,14 +39,14 @@ class DQN(nn.Module):
 class DQNAgent:
     def __init__(self):
         self.action_size = 4
-        self.memory = deque(maxlen=10000)  # 经验回放缓冲区
+        self.memory = deque(maxlen=maxlen)  # 经验回放缓冲区
 
         # 超参数设置
-        self.gamma = 0.99  # 折扣因子
-        self.epsilon = 1.0  # 初始探索率
-        self.epsilon_min = 0.05  # 最小探索率
-        self.epsilon_decay = 0.999  # 探索率衰减率
-        self.learning_rate = 0.0001  # 学习率
+        self.gamma = gamma  # 折扣因子
+        self.epsilon = epsilon  # 初始探索率
+        self.epsilon_min = epsilon_min  # 最小探索率
+        self.epsilon_decay = epsilon_decay  # 探索率衰减率
+        self.learning_rate = learning_rate  # 学习率
 
         self.batch_size = 128
 
