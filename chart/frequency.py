@@ -7,7 +7,7 @@ import math
 import os
 
 
-def save_frequency(episodes: list[int], scores: list, time: str, chart_dir: str):
+def save_frequency(scores: list, time: str, chart_dir: str):
     """
     将"Score"数据绘制成柱状图并保存为图片
     参数：
@@ -54,10 +54,19 @@ def save_frequency(episodes: list[int], scores: list, time: str, chart_dir: str)
     fig.text(
         0.5,
         0.88,
-        f"Episodes: {len(episodes)}, Time: {time}",
+        f"Episodes: {len(scores)}, Time: {time}",
         ha="center",
         fontsize=10,
         color="gray",
+    )
+    # 添加平均数和最大值的统计结果
+    fig.text(
+        0.97,
+        0.88,
+        f"Max: {max(scores)}, Average: {round(sum(scores)/len(scores))}",
+        ha="right",
+        fontsize=14,
+        color="black",
     )
 
     # 在每个柱子上方显示频率值

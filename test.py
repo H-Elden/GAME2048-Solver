@@ -1,10 +1,59 @@
 import numpy as np
 import torch
+import logging
+from tqdm import tqdm
 from game_env import Game2048
 from dqn_agent import DQNAgent
 
 import os
-from train import FINAL_MODEL_DIR, TEMP_MODEL_DIR
+from config import TEMP_MODEL_DIR, FINAL_MODEL_DIR, LOG_DIR
+
+
+def test_model(model_path: str, test_times: int, log_file: str):
+    # 先删除原有的日志文件
+    if os.path.exists(log_file) and os.path.isfile(log_file):
+        os.remove(log_file)
+        print(f"Delete file \033[94m{log_file}\033[0m successfully!")
+    # 配置日志
+    logger = logging.getLogger("test")
+    logger.setLevel(logging.INFO)
+    # 配置 FileHandler
+    handler = logging.FileHandler(log_file)
+    handler.setLevel(logging.INFO)
+    # 配置 Formatter
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    handler.setFormatter(formatter)
+    # 添加 Handler 并关闭日志传递
+    logger.addHandler(handler)
+    logger.propagate = False  # 关闭日志传递到父 Logger
+    print(
+        f"The testing log will be saved to \033[94m{os.path.abspath(log_file)}\033[0m"
+    )
+
+    # 初始化环境和代理
+    agent = DQNAgent()
+    agent.model.load_state_dict(torch.load(model_path))
+    agent.epsilon = 0.0  # 关闭探索
+    for e in tqdm(range(test_times)):
+        env = Game2048()
+        state = env.get_state()
+        done = False
+
+        while not done:
+            valid_actions = env.get_valid_actions()
+            action = agent.act(state, valid_actions)
+            env.move(["up", "down", "left", "right"][action])
+            state = env.get_state()
+            done = env.game_over()
+
+        logger.info(
+            f"Number: {e+1}/{test_times}\t"
+            f"Score: {env.score}\t"
+            f"Max Tile: {np.max(env.grid)}\t"
+            f"Steps: {env.steps}"
+        )
 
 
 def main():

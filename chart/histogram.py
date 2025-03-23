@@ -5,11 +5,10 @@ import matplotlib.pyplot as plt
 import os
 
 
-def save_histogram(episodes: list[int], max_tiles: list, time: str, chart_dir: str):
+def save_histogram(max_tiles: list, time: str, chart_dir: str):
     """
     将"Max Tile"数据绘制成柱状图并保存为图片
     参数：
-        episodes: 训练编号
         max_tiles: 数据列表
         time: 训练时间，用于副标题
     """
@@ -44,7 +43,7 @@ def save_histogram(episodes: list[int], max_tiles: list, time: str, chart_dir: s
     fig.text(
         0.5,
         0.88,
-        f"Episodes: {len(episodes)}, Time: {time}",
+        f"Episodes: {len(max_tiles)}, Time: {time}",
         ha="center",
         fontsize=10,
         color="gray",

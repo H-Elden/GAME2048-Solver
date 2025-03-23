@@ -4,7 +4,7 @@ from game_env import Game2048
 from dqn_agent import DQNAgent
 
 import os
-from train import FINAL_MODEL_DIR, TEMP_MODEL_DIR
+from config import TEMP_MODEL_DIR, FINAL_MODEL_DIR
 
 
 class GameGUI:

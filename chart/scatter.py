@@ -4,13 +4,10 @@ import matplotlib.pyplot as plt
 import os
 
 
-def save_scatter(
-    episodes: list[int], data: list, label: str, time: str, chart_dir: str
-):
+def save_scatter(data: list, label: str, time: str, chart_dir: str):
     """
     绘制散点图并保存为图片
     参数：
-        episodes: 训练编号
         data: 数据列表
         label: 数据标签，y轴标签: "Score", "Max Tile", "Steps"
         time: 训练时间，用于副标题
@@ -25,7 +22,7 @@ def save_scatter(
 
     # 绘制散点图
     ax.scatter(
-        episodes,
+        [x for x in range(1, len(data) + 1)],
         data,
         label=label,
         color=dic[label]["color"],
@@ -48,7 +45,7 @@ def save_scatter(
     fig.text(
         0.5,
         0.88,
-        f"Episodes: {len(episodes)}, Time: {time}",
+        f"Episodes: {len(data)}, Time: {time}",
         ha="center",
         fontsize=10,
         color="gray",
