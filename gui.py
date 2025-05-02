@@ -28,6 +28,11 @@ class GameGUI:
             512: "#ECC850",
             1024: "#EDC53F",
             2048: "#EEC22E",
+            4096: "#EEC22E",
+            8192: "#EEC22E",
+            16384: "#EEC22E",
+            32768: "#EEC22E",
+            65536: "#EEC22E",
         }
 
         # 创建图形界面元素
@@ -88,7 +93,7 @@ class GameGUI:
             self.env.move(direction)
             self.update_gui()
             self.master.after(self.refresh)
-        print("Game Over! Final Score:", self.env.score)
+        print(f"Game Over! Final Score: \033[92m{self.env.score}\033[0m")
 
 
 if __name__ == "__main__":
