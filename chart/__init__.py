@@ -10,7 +10,6 @@ PIC_DIR = "pic"
 
 def load_data(file_path: str):
     # 初始化数据存储列表
-    episodes = []
     scores = []
     max_tiles = []
     steps_list = []
