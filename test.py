@@ -5,8 +5,7 @@ from tqdm import tqdm
 from game_env import Game2048
 from dqn_agent import DQNAgent
 
-import os
-from config import TEMP_MODEL_DIR, FINAL_MODEL_DIR
+from common import select_model
 
 
 def test_model(model_path: str, test_times: int, log_file: str):
@@ -44,7 +43,7 @@ def test_model(model_path: str, test_times: int, log_file: str):
         while not done:
             valid_actions = env.get_valid_actions()
             action = agent.act(state, valid_actions)
-            env.move(["up", "down", "left", "right"][action])
+            env.move(action)
             state = env.get_state()
             done = env.game_over()
 
@@ -57,41 +56,7 @@ def test_model(model_path: str, test_times: int, log_file: str):
 
 
 def main():
-    # 选择模型
-    m = input("Final model or temp model? [F/t]:").strip() or "f"
-    model_path = ""
-    if m.lower() == "f":
-        # 获取目录内容
-        all_entries = os.listdir(FINAL_MODEL_DIR)
-        # 过滤 .pth 文件并排序
-        pth_files = []
-        for entry in all_entries:
-            full_path = os.path.join(FINAL_MODEL_DIR, entry)
-            if os.path.isfile(full_path) and entry.lower().endswith(".pth"):
-                pth_files.append(entry)
-
-        # 从大到小，从新到旧
-        pth_files.sort(reverse=True)
-
-        # 输出结果
-        if not pth_files:
-            raise FileNotFoundError(
-                f"Directory {os.path.abspath(FINAL_MODEL_DIR)} does not contain any .pth file"
-            )
-        else:
-            print(f"Found the following .pth files in the {FINAL_MODEL_DIR}:\n")
-            for idx, filename in enumerate(pth_files, 1):
-                print(f"\t{idx}. {filename}")
-            print()
-            num = int(input("Input number [1]: ") or "1")
-            if num > len(pth_files):
-                raise ValueError("Invalid number.")
-            model_path = os.path.join(FINAL_MODEL_DIR, pth_files[num - 1])
-    elif m.lower() == "t":
-        ch = int(input("Input checkpoint [100]: ").strip() or "100")
-        model_path = os.path.join(TEMP_MODEL_DIR, f"checkpoint_{ch}.pth")
-    else:
-        raise ValueError("Invalid option. Only f or t.")
+    model_path = select_model()
     print(f"Model: \033[94m{os.path.abspath(model_path)}\033[0m")
     while True:
         # 提示用户输入 4x4 矩阵的元素
@@ -137,7 +102,7 @@ def main():
             valid_actions = env.get_valid_actions()
             action = agent.act(state, valid_actions)
             direction = ["up", "down", "left", "right"][action]
-            print("\n\033[92m" + direction + "\033[0m\n")
+            print(f"\n\033[92m{direction}\033[0m\n")
         else:
             print("\n\033[91mGame Over!\033[0m\n")
 

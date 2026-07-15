@@ -92,7 +92,7 @@ def train(model_path: str, episodes=5000, log_file=None):
             prev_score = env.score
             prev_max_tile = np.max(env.grid)
             prev_empty_cells = np.sum(env.grid == 0)
-            env.move(["up", "down", "left", "right"][action])
+            env.move(action)
             next_state = env.get_state()
             reward = calculate_reward(env, prev_score, prev_max_tile, prev_empty_cells)
             done = env.game_over()

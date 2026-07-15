@@ -1,6 +1,9 @@
 import numpy as np
 import random
 
+# 方向常量：与 DQN 输出动作索引一致
+UP, DOWN, LEFT, RIGHT = 0, 1, 2, 3
+
 
 class Game2048:
     def __init__(self, initial_grid=None):
@@ -41,14 +44,13 @@ class Game2048:
 
     def _simulate_move(self, action_idx):
         """模拟移动并返回移动后的棋盘（不修改当前实例、不生成新方块）"""
-        direction = ["up", "down", "left", "right"][action_idx]
-        if direction == "up":
+        if action_idx == UP:
             return self._move_up(self.grid)
-        elif direction == "down":
+        elif action_idx == DOWN:
             return self._move_down(self.grid)
-        elif direction == "left":
+        elif action_idx == LEFT:
             return self._move_left(self.grid)
-        elif direction == "right":
+        elif action_idx == RIGHT:
             return self._move_right(self.grid)
 
     def game_over(self) -> bool:
@@ -58,13 +60,13 @@ class Game2048:
     def move(self, direction):
         # 执行移动操作，记录原始状态用于比较
         orig_grid = self.grid.copy()
-        if direction == "up":
+        if direction == UP:
             self.grid = self._move_up(self.grid)
-        elif direction == "down":
+        elif direction == DOWN:
             self.grid = self._move_down(self.grid)
-        elif direction == "left":
+        elif direction == LEFT:
             self.grid = self._move_left(self.grid)
-        elif direction == "right":
+        elif direction == RIGHT:
             self.grid = self._move_right(self.grid)
 
         # 如果棋盘状态改变，则添加新数字
