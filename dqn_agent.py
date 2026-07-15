@@ -66,8 +66,17 @@ class DQNAgent:
         self.optimizer = Adam(self.model.parameters(), lr=self.learning_rate)
 
     def update_target_model(self):
-        """将目标网络参数更新为当前网络参数"""
+        """将目标网络参数更新为当前网络参数（硬更新）"""
         self.target_model.load_state_dict(self.model.state_dict())
+
+    def soft_update_target_model(self, tau=0.005):
+        """软更新：θ_target = τ·θ_local + (1-τ)·θ_target，每步平滑融合"""
+        for target_param, local_param in zip(
+            self.target_model.parameters(), self.model.parameters()
+        ):
+            target_param.data.copy_(
+                tau * local_param.data + (1 - tau) * target_param.data
+            )
 
     def remember(self, state, action, reward, next_state, done):
         """保存经验到记忆库"""

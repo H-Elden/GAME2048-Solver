@@ -12,7 +12,7 @@ from config import TEMP_MODEL_DIR, FINAL_MODEL_DIR, LOG_DIR, update_target_freq
 import os
 
 
-def calculate_reward(env, prev_score, prev_max_tile, prev_empty_cells):
+def calculate_reward(env, prev_score, prev_max_tile, prev_empty_cells, done=False):
     # 1. 基础得分奖励（合并方块的即时收益）
     score_reward = env.score - prev_score
 
@@ -33,6 +33,11 @@ def calculate_reward(env, prev_score, prev_max_tile, prev_empty_cells):
 
     # 总奖励组合
     total_reward = score_reward + max_tile_reward + empty_reward + mono_reward
+
+    # 5. 终结状态惩罚（引导模型学会避死）
+    if done:
+        total_reward -= 50
+
     return total_reward
 
 
@@ -94,14 +99,16 @@ def train(model_path: str, episodes=5000, log_file=None):
             prev_empty_cells = np.sum(env.grid == 0)
             env.move(action)
             next_state = env.get_state()
-            reward = calculate_reward(env, prev_score, prev_max_tile, prev_empty_cells)
             done = env.game_over()
+            reward = calculate_reward(env, prev_score, prev_max_tile, prev_empty_cells, done)
 
             # 保存经验
             agent.remember(state, action, reward, next_state, done)
             state = next_state
             # 经验回放训练
             agent.replay()
+            # 每步软更新目标网络
+            agent.soft_update_target_model()
 
         if log_file:
             logger.info(
@@ -111,9 +118,8 @@ def train(model_path: str, episodes=5000, log_file=None):
                 f"Steps: {env.steps}\t"
                 f"Epsilon: {agent.epsilon:.2f}"
             )
-        # 衰减探索率
-        if agent.epsilon > agent.epsilon_min:
-            agent.epsilon = 1.0 - (1.0 - agent.epsilon_min) * (e / (episodes * 0.9))
+        # 指数衰减探索率（全周期平滑下降，避免后期锁死）
+        agent.epsilon = agent.epsilon_min + (1.0 - agent.epsilon_min) * np.exp(-e / (episodes * 0.25))
 
         # 定期更新目标网络
         if e % update_target_freq == 0:
