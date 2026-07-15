@@ -6,12 +6,12 @@ from game_env import Game2048
 from dqn_agent import DQNAgent
 
 import os
-from config import TEMP_MODEL_DIR, FINAL_MODEL_DIR, LOG_DIR
+from config import TEMP_MODEL_DIR, FINAL_MODEL_DIR
 
 
 def test_model(model_path: str, test_times: int, log_file: str):
     # 先删除原有的日志文件
-    if os.path.exists(log_file) and os.path.isfile(log_file):
+    if os.path.isfile(log_file):
         os.remove(log_file)
         print(f"Delete file \033[94m{log_file}\033[0m successfully!")
     # 配置日志
@@ -34,7 +34,7 @@ def test_model(model_path: str, test_times: int, log_file: str):
 
     # 初始化环境和代理
     agent = DQNAgent()
-    agent.model.load_state_dict(torch.load(model_path))
+    agent.model.load_state_dict(torch.load(model_path, map_location="cpu"))
     agent.epsilon = 0.0  # 关闭探索
     for e in tqdm(range(test_times)):
         env = Game2048()
@@ -129,7 +129,7 @@ def main():
 
         # 加载训练好的模型
         agent = DQNAgent()
-        agent.model.load_state_dict(torch.load(model_path))
+        agent.model.load_state_dict(torch.load(model_path, map_location="cpu"))
         agent.epsilon = 0.0  # 关闭探索
 
         if not env.game_over():

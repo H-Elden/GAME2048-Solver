@@ -10,7 +10,6 @@ from config import (
     gamma,
     epsilon,
     epsilon_min,
-    epsilon_decay,
     learning_rate,
     replay_beta,
     batch_size,
@@ -55,7 +54,6 @@ class DQNAgent:
         self.gamma = gamma  # 折扣因子
         self.epsilon = epsilon  # 初始探索率
         self.epsilon_min = epsilon_min  # 最小探索率
-        self.epsilon_decay = epsilon_decay  # 探索率衰减率
         self.learning_rate = learning_rate  # 学习率
         self.beta = replay_beta  # 初始重要性采样参数
 

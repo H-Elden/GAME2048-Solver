@@ -32,20 +32,28 @@ class Game2048:
         return log_grid.reshape(4, 4, 1)  # 输出形状(4,4,1)
 
     def get_valid_actions(self):
-        """返回有效动作索引列表[0-3]"""
+        """返回有效动作索引列表[0-3]（只检查棋盘，不创建新实例）"""
         valid = []
-        for idx, dir in enumerate(["up", "down", "left", "right"]):
-            copy = Game2048()
-            copy.grid = self.grid.copy()
-            copy.move(dir)
-            if not np.array_equal(copy.grid, self.grid):
+        for idx in range(4):
+            if not np.array_equal(self._simulate_move(idx), self.grid):
                 valid.append(idx)
         return valid
 
+    def _simulate_move(self, action_idx):
+        """模拟移动并返回移动后的棋盘（不修改当前实例、不生成新方块）"""
+        direction = ["up", "down", "left", "right"][action_idx]
+        if direction == "up":
+            return self._move_up(self.grid)
+        elif direction == "down":
+            return self._move_down(self.grid)
+        elif direction == "left":
+            return self._move_left(self.grid)
+        elif direction == "right":
+            return self._move_right(self.grid)
+
     def game_over(self) -> bool:
         """判断是否还有可行的移动方向"""
-        valid = self.get_valid_actions()
-        return False if valid else True
+        return not self.get_valid_actions()
 
     def move(self, direction):
         # 执行移动操作，记录原始状态用于比较

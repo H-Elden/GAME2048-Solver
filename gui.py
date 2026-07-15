@@ -92,7 +92,6 @@ class GameGUI:
             direction = ["up", "down", "left", "right"][action]
             self.env.move(direction)
             self.update_gui()
-            self.master.after(self.refresh)
         print(f"Game Over! Final Score: \033[92m{self.env.score}\033[0m")
 
 
@@ -136,7 +135,7 @@ if __name__ == "__main__":
 
     # 加载训练好的模型
     agent = DQNAgent()
-    agent.model.load_state_dict(torch.load(model_path))
+    agent.model.load_state_dict(torch.load(model_path, map_location="cpu"))
     agent.epsilon = 0.0  # 关闭探索
 
     # 输入gui刷新率
