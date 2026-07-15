@@ -5,6 +5,7 @@ LOG_DIR = "log"
 
 # 超参数
 update_target_freq = 20  # 目标网络更新频率
+replay_frequency = 4  # 每N步replay一次，减少相关样本连续更新
 maxlen = 10000  # 经验回放缓冲区大小
 replay_beta = 0.4  # 初始重要性采样参数
 gamma = 0.99  # 折扣因子

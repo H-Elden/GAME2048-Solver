@@ -7,7 +7,7 @@ from tqdm import tqdm
 from chart import save_train_chart, save_test_chart
 from datetime import datetime
 from test import test_model
-from config import TEMP_MODEL_DIR, FINAL_MODEL_DIR, LOG_DIR, update_target_freq
+from config import TEMP_MODEL_DIR, FINAL_MODEL_DIR, LOG_DIR, update_target_freq, replay_frequency
 
 import os
 
@@ -81,6 +81,7 @@ def train(model_path: str, episodes=5000, log_file=None):
         )
     # 初始化环境和代理
     agent = DQNAgent()
+    step_count = 0
     for e in tqdm(range(episodes)):
         env = Game2048()
         state = env.get_state()
@@ -100,8 +101,10 @@ def train(model_path: str, episodes=5000, log_file=None):
             # 保存经验
             agent.remember(state, action, reward, next_state, done)
             state = next_state
-            # 经验回放训练
-            agent.replay()
+            step_count += 1
+            # 经验回放训练（每N步一次）
+            if step_count % replay_frequency == 0:
+                agent.replay()
 
         if log_file:
             logger.info(
