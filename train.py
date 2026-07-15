@@ -153,8 +153,8 @@ if __name__ == "__main__":
 
     # 绘制并保存训练统计图
     if chart.lower() == "y":
-        save_train_chart(train_log_file, now_time)
+        save_train_chart(train_log_file, now_time, model_path)
 
     if test.lower() == "y":
         test_model(model_path, test_num, test_log_file)
-        save_test_chart(test_log_file, now_time)
+        save_test_chart(test_log_file, now_time, model_path)
