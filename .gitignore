@@ -3,3 +3,5 @@ result/
 *.pth
 *.png
 *.log
+.vscode/
+CLAUDE.md
