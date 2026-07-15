@@ -72,7 +72,7 @@ def main():
 
     if mode == "1":
         # 批量测试模式
-        test_times = int(input("Input test times [100]: ").strip() or "100")
+        test_times = int(input("Input test times [1000]: ").strip() or "1000")
         now_time = datetime.now().strftime("%Y%m%d_%H%M")
 
         # 从模型文件名提取训练时间戳，定位 log 目录

@@ -130,11 +130,11 @@ def train(model_path: str, episodes=5000, log_file=None):
 
 
 if __name__ == "__main__":
-    episodes = int(input("Input episodes: "))
+    episodes = int(input("Input episodes [1000]: ").strip() or "1000")
     chart = input("Generate statistical chart? [Y/n]: ").strip() or "y"
     test = input("Automatically test the final model? [Y/n]: ").strip() or "y"
     if test == "y":
-        test_num = int(input("Input test times [100]: ").strip() or "100")
+        test_num = int(input("Input test times [1000]: ").strip() or "1000")
     now_time = datetime.now().strftime("%Y%m%d_%H%M")
 
     # 确保日志文件夹存在
