@@ -102,8 +102,6 @@ def train(model_path: str, episodes=5000, log_file=None):
             state = next_state
             # 经验回放训练
             agent.replay()
-            # 每步软更新目标网络
-            agent.soft_update_target_model()
 
         if log_file:
             logger.info(
