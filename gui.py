@@ -82,16 +82,21 @@ class GameGUI:
         self.master.update()
 
     def play_game(self):
-        while not self.env.game_over():
-            state = self.env.get_state()  # 使用新状态表示
+        """使用 after 定时回调逐步执行，refresh 控制动画速度"""
+        def step():
+            if self.env.game_over():
+                print(f"Game Over! Final Score: \033[92m{self.env.score}\033[0m")
+                return
             valid_actions = self.env.get_valid_actions()
             if not valid_actions:
-                break
-
-            action = self.agent.act(state, valid_actions)
+                print(f"Game Over! Final Score: \033[92m{self.env.score}\033[0m")
+                return
+            action = self.agent.act(self.env.get_state(), valid_actions)
             self.env.move(action)
             self.update_gui()
-        print(f"Game Over! Final Score: \033[92m{self.env.score}\033[0m")
+            self.master.after(self.refresh, step)
+
+        step()
 
 
 if __name__ == "__main__":

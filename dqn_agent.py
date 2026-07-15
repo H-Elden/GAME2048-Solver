@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-import torch.optim as optim
+from torch.optim import Adam
 import random
 from collections import deque
 import numpy as np
@@ -63,7 +63,7 @@ class DQNAgent:
         self.model = DQN().to(device)
         self.target_model = DQN().to(device)
         self.update_target_model()  # 初始化目标网络
-        self.optimizer = optim.Adam(self.model.parameters(), lr=self.learning_rate)
+        self.optimizer = Adam(self.model.parameters(), lr=self.learning_rate)
 
     def update_target_model(self):
         """将目标网络参数更新为当前网络参数"""
