@@ -12,7 +12,7 @@ from config import TEMP_MODEL_DIR, FINAL_MODEL_DIR, LOG_DIR, update_target_freq
 import os
 
 
-def calculate_reward(env, prev_score, prev_max_tile, prev_empty_cells, done=False):
+def calculate_reward(env, prev_score, prev_max_tile, prev_empty_cells):
     # 1. 基础得分奖励（合并方块的即时收益）
     score_reward = env.score - prev_score
 
@@ -33,11 +33,6 @@ def calculate_reward(env, prev_score, prev_max_tile, prev_empty_cells, done=Fals
 
     # 总奖励组合
     total_reward = score_reward + max_tile_reward + empty_reward + mono_reward
-
-    # 5. 终结状态惩罚（引导模型学会避死）
-    if done:
-        total_reward -= 50
-
     return total_reward
 
 
@@ -99,8 +94,8 @@ def train(model_path: str, episodes=5000, log_file=None):
             prev_empty_cells = np.sum(env.grid == 0)
             env.move(action)
             next_state = env.get_state()
+            reward = calculate_reward(env, prev_score, prev_max_tile, prev_empty_cells)
             done = env.game_over()
-            reward = calculate_reward(env, prev_score, prev_max_tile, prev_empty_cells, done)
 
             # 保存经验
             agent.remember(state, action, reward, next_state, done)
