@@ -111,9 +111,10 @@ class DQNAgent:
         dones = torch.FloatTensor(dones).to(device)
         weights = torch.FloatTensor(weights).to(device)
 
-        # 计算当前Q值和目标Q值
+        # 计算当前Q值和目标Q值 (Double DQN: online选动作, target估值)
         current_q = self.model(states).gather(1, actions.unsqueeze(1))
-        next_q = self.target_model(next_states).detach().max(1)[0]
+        next_actions = self.model(next_states).detach().max(1)[1].unsqueeze(1)
+        next_q = self.target_model(next_states).detach().gather(1, next_actions).squeeze()
         target_q = rewards + (1 - dones) * self.gamma * next_q
 
         # 计算TD误差并更新优先级
