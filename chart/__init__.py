@@ -137,11 +137,12 @@ def save_train_chart(log_path: str, time: str, model_path=None):
     _write_statistics_log(scores, max_tiles, steps_list, log_dir, "Training", model_path)
 
 
-def save_test_chart(log_path: str, time: str, model_path=None):
+def save_test_chart(log_path: str, time: str, model_path=None, chart_dir=None):
     scores, max_tiles, steps_list = load_data(log_path)
-    # 创建图表文件夹
-    current_dir = os.path.dirname(__file__)
-    chart_dir = os.path.join(current_dir, PIC_DIR, time, "test")
+    # 创建图表文件夹（chart_dir 传入时直接使用，否则沿用默认路径）
+    if chart_dir is None:
+        current_dir = os.path.dirname(__file__)
+        chart_dir = os.path.join(current_dir, PIC_DIR, time, "test")
     os.makedirs(chart_dir, exist_ok=True)
     save_histogram(max_tiles, time, chart_dir)
     save_pie_chart(max_tiles, time, chart_dir)

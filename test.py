@@ -1,10 +1,14 @@
 import os
+import re
 import numpy as np
 import torch
 import logging
+from datetime import datetime
 from tqdm import tqdm
 from game_env import Game2048
 from dqn_agent import DQNAgent
+from chart import save_test_chart
+from config import LOG_DIR
 
 from common import select_model
 
@@ -59,6 +63,38 @@ def test_model(model_path: str, test_times: int, log_file: str):
 def main():
     model_path = select_model()
     print(f"Model: \033[94m{os.path.abspath(model_path)}\033[0m")
+
+    # 模式选择
+    print("\nSelect mode:")
+    print("  1. Batch test (multiple episodes with chart & statistics)")
+    print("  2. Manual board (single-step inference)")
+    mode = input("Choose [1]: ").strip() or "1"
+
+    if mode == "1":
+        # 批量测试模式
+        test_times = int(input("Input test times [100]: ").strip() or "100")
+        now_time = datetime.now().strftime("%Y%m%d_%H%M")
+
+        # 从模型文件名提取训练时间戳，定位 log 目录
+        basename = os.path.basename(model_path)
+        m = re.search(r"(\d{8}_\d{4})", basename)
+        model_time = m.group(1) if m else None
+        log_dir = os.path.join(LOG_DIR, model_time) if model_time else os.path.join(LOG_DIR, f"retest_{now_time}")
+        os.makedirs(log_dir, exist_ok=True)
+
+        test_log_file = os.path.join(log_dir, f"test_{now_time}.log")
+        test_model(model_path, test_times, test_log_file)
+
+        # 图表路径: chart/pic/{model_time}/test/{now_time}/
+        if model_time:
+            chart_base = os.path.join(os.path.dirname(__file__), "chart")
+            chart_test_dir = os.path.join(chart_base, "pic", model_time, "test", now_time)
+        else:
+            chart_test_dir = None
+        save_test_chart(test_log_file, now_time, model_path, chart_dir=chart_test_dir)
+        return
+
+    # 模式 2：手动输入盘面，单步推理
     while True:
         # 提示用户输入 4x4 矩阵的元素
         print("Input game board:")
